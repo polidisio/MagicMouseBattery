@@ -54,8 +54,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         let lowestLevel = batteryService.devices.compactMap { $0.batteryLevel }.min() ?? 100
 
         if let image = NSImage(named: "battery") {
-            image.isTemplate = true
-            button.image = image
+            let resizedImage = NSImage(size: NSSize(width: 18, height: 18))
+            resizedImage.lockFocus()
+            image.draw(in: NSRect(origin: .zero, size: resizedImage.size),
+                      from: NSRect(origin: .zero, size: image.size),
+                      operation: .sourceOver,
+                      fraction: 1.0)
+            resizedImage.unlockFocus()
+            button.image = resizedImage
         }
 
         button.title = lowestLevel < 100 ? "\(lowestLevel)%" : ""
