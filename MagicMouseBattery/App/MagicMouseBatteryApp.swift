@@ -53,16 +53,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         let lowestLevel = batteryService.devices.compactMap { $0.batteryLevel }.min() ?? 100
 
-        let symbolName: String
-        if lowestLevel >= 50 {
-            symbolName = "battery.100"
-        } else if lowestLevel >= 20 {
-            symbolName = "battery.25"
-        } else {
-            symbolName = "battery.0"
-        }
-
-        if let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: "Battery") {
+        if let image = NSImage(named: "battery") {
             image.isTemplate = true
             button.image = image
         }
