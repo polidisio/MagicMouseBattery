@@ -64,7 +64,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             button.image = resizedImage
         }
 
-        button.title = lowestLevel < 100 ? "\(lowestLevel)%" : ""
+        if lowestLevel < 100 {
+            button.attributedTitle = attributedTitle(for: lowestLevel)
+        }
+    }
+
+    private func attributedTitle(for level: Int) -> NSAttributedString {
+        let color: NSColor
+        if level < 10 {
+            color = .systemRed
+        } else if level < 20 {
+            color = .systemYellow
+        } else {
+            color = .labelColor
+        }
+
+        let attributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: color,
+            .font: NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .medium)
+        ]
+
+        return NSAttributedString(string: "\(level)%", attributes: attributes)
     }
 
     private func setupPopover() {
