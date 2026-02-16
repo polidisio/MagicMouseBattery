@@ -1,11 +1,15 @@
 import Foundation
 import IOKit
+import Combine
 
 class BatteryService: ObservableObject {
+    static let shared = BatteryService()
+    
     @Published var devices: [DeviceBattery] = []
     @Published var lastUpdate: Date?
 
     private var timer: Timer?
+    var onDevicesUpdated: (() -> Void)?
 
     init() {
         refresh()
@@ -29,6 +33,7 @@ class BatteryService: ObservableObject {
             DispatchQueue.main.async {
                 self?.devices = detectedDevices
                 self?.lastUpdate = Date()
+                self?.onDevicesUpdated?()
             }
         }
     }

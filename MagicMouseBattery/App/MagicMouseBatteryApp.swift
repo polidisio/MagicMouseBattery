@@ -1,9 +1,10 @@
 import SwiftUI
 import AppKit
+import Combine
 
 @main
 struct MagicMouseBatteryApp: App {
-    @StateObject private var batteryService = BatteryService()
+    @StateObject private var batteryService = BatteryService.shared
     @StateObject private var notificationService = NotificationService()
 
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -20,8 +21,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var statusItem: NSStatusItem!
     var eventMonitor: Any?
 
-    let batteryService = BatteryService()
-    let notificationService = NotificationService()
+    private var batteryService: BatteryService { BatteryService.shared }
+    private var notificationService: NotificationService { NotificationService() }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusItem()
@@ -30,12 +31,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         batteryService.startMonitoring(interval: 60)
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(batteryLevelsChanged),
-            name: .init("BatteryLevelsChanged"),
-            object: nil
-        )
+        batteryService.onDevicesUpdated = { [weak self] in
+            DispatchQueue.main.async {
+                self?.updateStatusItemImage()
+            }
+        }
     }
 
     private func setupStatusItem() {
@@ -117,12 +117,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
                 popover.contentViewController?.view.window?.makeKey()
             }
-        }
-    }
-
-    @objc private func batteryLevelsChanged() {
-        DispatchQueue.main.async { [weak self] in
-            self?.updateStatusItemImage()
         }
     }
 
