@@ -4,6 +4,7 @@ import AppKit
 struct MenuBarView: View {
     @ObservedObject var batteryService: BatteryService
     @ObservedObject var notificationService: NotificationService
+    @ObservedObject var launchAtLoginService: LaunchAtLoginService
     @State private var showingSettings = false
 
     var body: some View {
@@ -74,7 +75,7 @@ struct MenuBarView: View {
         }
         .frame(width: 260)
         .sheet(isPresented: $showingSettings) {
-            SettingsView(notificationService: notificationService)
+            SettingsView(notificationService: notificationService, launchAtLoginService: launchAtLoginService)
         }
     }
 }

@@ -2,11 +2,22 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject var notificationService: NotificationService
+    @ObservedObject var launchAtLoginService: LaunchAtLoginService
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Configuración")
                 .font(.headline)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Toggle("Iniciar al arrancar el sistema", isOn: $launchAtLoginService.isEnabled)
+
+                Text("La aplicación se abrirá automáticamente al iniciar sesión")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Divider()
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("Notificación de batería baja")
