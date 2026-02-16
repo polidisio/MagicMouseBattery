@@ -2,6 +2,8 @@ import SwiftUI
 import AppKit
 import Combine
 
+// PR de prueba para issue #3 - Sistema de automatización funcionando correctamente
+
 @main
 struct MagicMouseBatteryApp: App {
     @StateObject private var batteryService = BatteryService.shared
