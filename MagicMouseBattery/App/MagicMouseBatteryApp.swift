@@ -23,6 +23,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     private var batteryService: BatteryService { BatteryService.shared }
     private var notificationService: NotificationService { NotificationService() }
+    private var launchAtLoginService: LaunchAtLoginService { LaunchAtLoginService() }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusItem()
@@ -95,7 +96,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         let menuBarView = MenuBarView(
             batteryService: batteryService,
-            notificationService: notificationService
+            notificationService: notificationService,
+            launchAtLoginService: launchAtLoginService
         )
         popover.contentViewController = NSHostingController(rootView: menuBarView)
     }

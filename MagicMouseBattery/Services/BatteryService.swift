@@ -1,6 +1,7 @@
 import Foundation
 import IOKit
 import Combine
+import ServiceManagement
 
 class BatteryService: ObservableObject {
     static let shared = BatteryService()
@@ -120,5 +121,42 @@ class BatteryService: ObservableObject {
         }
 
         return .unknown
+    }
+}
+
+class LaunchAtLoginService: ObservableObject {
+    @Published var isEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(isEnabled, forKey: "launchAtLogin")
+            updateLaunchAtLogin()
+        }
+    }
+
+    init() {
+        self.isEnabled = UserDefaults.standard.bool(forKey: "launchAtLogin")
+        if #available(macOS 13.0, *) {
+            syncWithSystemStatus()
+        }
+    }
+
+    @available(macOS 13.0, *)
+    private func syncWithSystemStatus() {
+        if SMAppService.mainApp.status == .enabled {
+            isEnabled = true
+        }
+    }
+
+    private func updateLaunchAtLogin() {
+        if #available(macOS 13.0, *) {
+            do {
+                if isEnabled {
+                    try SMAppService.mainApp.register()
+                } else {
+                    try SMAppService.mainApp.unregister()
+                }
+            } catch {
+                print("Error updating launch at login: \(error)")
+            }
+        }
     }
 }
