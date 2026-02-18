@@ -32,19 +32,6 @@ struct MenuBarView: View {
                 .padding(.vertical, 4)
 
             Button(action: {
-                batteryService.refresh()
-            }) {
-                HStack {
-                    Image(systemName: "arrow.clockwise")
-                    Text("Actualizar")
-                }
-            }
-            .buttonStyle(.borderless)
-            .keyboardShortcut("r", modifiers: .command)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
-
-            Button(action: {
                 showingSettings = true
             }) {
                 HStack {
