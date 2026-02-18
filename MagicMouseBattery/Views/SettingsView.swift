@@ -3,11 +3,24 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject var notificationService: NotificationService
     @ObservedObject var launchAtLoginService: LaunchAtLoginService
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Configuración")
-                .font(.headline)
+            HStack {
+                Text("Configuración")
+                    .font(.headline)
+                
+                Spacer()
+                
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
 
             VStack(alignment: .leading, spacing: 8) {
                 Toggle("Iniciar al arrancar el sistema", isOn: $launchAtLoginService.isEnabled)
@@ -56,6 +69,13 @@ struct SettingsView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
+
+            Divider()
+
+            Button("Cerrar") {
+                dismiss()
+            }
+            .buttonStyle(.bordered)
 
             Spacer()
         }

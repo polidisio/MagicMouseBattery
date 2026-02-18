@@ -21,16 +21,18 @@ struct MagicMouseBatteryApp: App {
 class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var popover: NSPopover!
     var statusItem: NSStatusItem!
-    var eventMonitor: Any?
 
-    private var batteryService: BatteryService { BatteryService.shared }
-    private var notificationService: NotificationService { NotificationService() }
-    private var launchAtLoginService: LaunchAtLoginService { LaunchAtLoginService() }
+    private let batteryService = BatteryService.shared
+    private let notificationService = NotificationService()
+    private let launchAtLoginService = LaunchAtLoginService()
+
+    override init() {
+        super.init()
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusItem()
         setupPopover()
-        setupEventMonitor()
 
         batteryService.startMonitoring(interval: 60)
 
@@ -104,29 +106,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         popover.contentViewController = NSHostingController(rootView: menuBarView)
     }
 
-    private func setupEventMonitor() {
-        eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
-            if let popover = self?.popover, popover.isShown {
-                popover.performClose(nil)
-            }
-        }
-    }
-
     @objc func togglePopover() {
         if popover.isShown {
             popover.performClose(nil)
         } else {
             if let button = statusItem.button {
                 batteryService.refresh()
+                NSApp.activate(ignoringOtherApps: true)
                 popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-                popover.contentViewController?.view.window?.makeKey()
             }
-        }
-    }
-
-    deinit {
-        if let monitor = eventMonitor {
-            NSEvent.removeMonitor(monitor)
         }
     }
 }
