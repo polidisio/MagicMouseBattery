@@ -2,8 +2,6 @@ import SwiftUI
 import AppKit
 import Combine
 
-// PR de prueba para issue #3 - Sistema de automatización funcionando correctamente
-
 @main
 struct MagicMouseBatteryApp: App {
     @StateObject private var batteryService = BatteryService.shared
@@ -24,10 +22,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var eventMonitor: Any?
 
     private var batteryService: BatteryService { BatteryService.shared }
-    private var notificationService: NotificationService { NotificationService() }
+    private var notificationService: NotificationService!
     private var launchAtLoginService: LaunchAtLoginService { LaunchAtLoginService() }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Initialize notification service and connect to battery service
+        notificationService = NotificationService()
+        batteryService.notificationService = notificationService
+        
         setupStatusItem()
         setupPopover()
         setupEventMonitor()

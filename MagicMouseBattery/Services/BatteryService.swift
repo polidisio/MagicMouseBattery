@@ -11,6 +11,9 @@ class BatteryService: ObservableObject {
 
     private var timer: Timer?
     var onDevicesUpdated: (() -> Void)?
+    
+    // Reference to NotificationService for sending low battery alerts
+    var notificationService: NotificationService?
 
     init() {
         refresh()
@@ -35,6 +38,9 @@ class BatteryService: ObservableObject {
                 self?.devices = detectedDevices
                 self?.lastUpdate = Date()
                 self?.onDevicesUpdated?()
+                
+                // Check battery levels and send notifications if needed
+                self?.notificationService?.checkBatteryLevels(for: detectedDevices)
             }
         }
     }
