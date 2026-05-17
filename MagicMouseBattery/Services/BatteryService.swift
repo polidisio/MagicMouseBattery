@@ -25,6 +25,8 @@ class BatteryService: ObservableObject {
         timer?.invalidate()
     }
 
+    private let monitoringInterval: TimeInterval = 60
+    
     func startMonitoring(interval: TimeInterval = 60) {
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
@@ -35,13 +37,14 @@ class BatteryService: ObservableObject {
     func refresh() {
         DispatchQueue.global(qos: .background).async { [weak self] in
             let detectedDevices = self?.detectDevices() ?? []
-            DispatchQueue.main.async {
-                self?.devices = detectedDevices
-                self?.lastUpdate = Date()
-                self?.onDevicesUpdated?()
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.devices = detectedDevices
+                self.lastUpdate = Date()
+                self.onDevicesUpdated?()
                 
                 // Check battery levels and send notifications if needed
-                self?.notificationService?.checkBatteryLevels(for: detectedDevices)
+                self.notificationService?.checkBatteryLevels(for: detectedDevices)
             }
         }
     }
@@ -92,7 +95,10 @@ class BatteryService: ObservableObject {
             return nil
         }
 
-        return batteryDict as? Int
+        guard let batteryInt = batteryDict as? Int else {
+            return nil
+        }
+        return batteryInt
     }
 
     private func getProductName(from object: io_object_t) -> String? {
