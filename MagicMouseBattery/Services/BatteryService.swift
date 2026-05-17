@@ -13,7 +13,8 @@ class BatteryService: ObservableObject {
     var onDevicesUpdated: (() -> Void)?
     
     // Reference to NotificationService for sending low battery alerts
-    var notificationService: NotificationService?
+    // Using weak to avoid retain cycle since BatteryService is a singleton
+    weak var notificationService: NotificationService?
 
     init() {
         refresh()
@@ -54,6 +55,7 @@ class BatteryService: ObservableObject {
         let result = IOServiceGetMatchingServices(kIOMainPortDefault, matchingDict, &iterator)
 
         guard result == KERN_SUCCESS else {
+            print("[BatteryService] IOKit: Failed to get matching services, error: \(result)")
             return devices
         }
 
